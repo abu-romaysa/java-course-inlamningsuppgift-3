@@ -7,6 +7,9 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -22,8 +25,11 @@ import javax.swing.border.TitledBorder;
 
 public class MainWindow extends JFrame
 {
-    private static final int FRAME_WIDTH = 300;
-    private static final int FRAME_HEIGHT = 100;
+    private static final int FRAME_WIDTH = 800;
+    private static final int FRAME_HEIGHT = 600;
+    private static final int BUTTON_WIDTH = 150;
+    private static final int BUTTON_HEIGHT = 50;
+
     private JButton overviewButton = new JButton("Overview");
     private JButton handleCustomerButton = new JButton("Handle Customer");
     private JButton newCustomerButton = new JButton("New Customer");
@@ -32,16 +38,34 @@ public class MainWindow extends JFrame
     private JButton depositButton = new JButton("Deposit");
     private JButton withdrawButton = new JButton("Withdraw");
     private JButton transactionsButton = new JButton("Transactions");
-    private JLabel label = new JLabel("QUICK ACCESS VIEW");
+    private ArrayList<JButton> buttonList = new ArrayList<JButton>();
+
+    private JLabel windowTitleLabel = new JLabel("QUICK ACCESS VIEW");
+
+    private JPanel mainPanel = new JPanel();
+    private JPanel quickOptionsPanel = new JPanel();
+    private JPanel titlePanel = new JPanel(); 
 
     public MainWindow()
     {
+        buttonList.add(overviewButton);
+        buttonList.add(handleCustomerButton);
+        buttonList.add(newCustomerButton);
+        buttonList.add(newAccountButton);
+        buttonList.add(closeAccountButton);
+        buttonList.add(depositButton);
+        buttonList.add(withdrawButton);
+        buttonList.add(transactionsButton);
+        
+        setButtonSizes();
+        addButtonListeners();
+        
         createComponents();
-        this.setPreferredSize(new Dimension(800, 600));
+        this.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
-
+        setTitle("Saldao-8 Banking System");
     }
 
     private void createComponents()
@@ -51,24 +75,9 @@ public class MainWindow extends JFrame
     }
     
     private void createMainWindowContent()
-    {
-        JPanel mainPanel = new JPanel();
-        JPanel quickOptionsPanel = new JPanel();
-        JPanel titlePanel = new JPanel();
-        //quickOptionsPanel.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-        /*quickOptionsPanel.setLayout(new GridLayout(3, 3, 5, 5));
-        titlePanel.add(label);
-        quickOptionsPanel.add(button1);
-        quickOptionsPanel.add(button2);
-        quickOptionsPanel.add(button3);
-        quickOptionsPanel.add(button4);
-        quickOptionsPanel.add(button5);
-        quickOptionsPanel.add(button6);
-        quickOptionsPanel.setBorder(new EmptyBorder(new Insets(45, 70, 45, 70)));*/
-        
-        
-        label.setFont(new Font("Serif", Font.BOLD, 20)); //https://stackoverflow.com/a/29148550
-        titlePanel.add(label);
+    {        
+        windowTitleLabel.setFont(new Font("Serif", Font.BOLD, 20)); //https://stackoverflow.com/a/29148550
+        titlePanel.add(windowTitleLabel);
         titlePanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
         
         JPanel overviewOnePanel = new JPanel();
@@ -76,19 +85,11 @@ public class MainWindow extends JFrame
         JPanel overviewThreePanel = new JPanel();
         JPanel overviewFourPanel = new JPanel();
         
+        // om jag lägger i array så tar add lika många rader sedan
         overviewOnePanel.setLayout(new FlowLayout());
         overviewTwoPanel.setLayout(new FlowLayout());
         overviewThreePanel.setLayout(new FlowLayout());
-        overviewFourPanel.setLayout(new FlowLayout());        
-        
-        overviewButton.setPreferredSize(new Dimension(150,50));
-        handleCustomerButton.setPreferredSize(new Dimension(150,50));
-        newCustomerButton.setPreferredSize(new Dimension(150,50));
-        newAccountButton.setPreferredSize(new Dimension(150,50));
-        closeAccountButton.setPreferredSize(new Dimension(150,50));
-        depositButton.setPreferredSize(new Dimension(150,50));
-        withdrawButton.setPreferredSize(new Dimension(150,50));
-        transactionsButton.setPreferredSize(new Dimension(150,50));
+        overviewFourPanel.setLayout(new FlowLayout());
         
         overviewOnePanel.add(overviewButton);
         overviewTwoPanel.add(handleCustomerButton);
@@ -98,22 +99,17 @@ public class MainWindow extends JFrame
         overviewFourPanel.add(depositButton);
         overviewFourPanel.add(withdrawButton);
         overviewFourPanel.add(transactionsButton);
-        
-        TitledBorder overviewOnePanelTitle = BorderFactory.createTitledBorder("Overview");
-        TitledBorder overviewTwoPanelTitle = BorderFactory.createTitledBorder("Customer");
-        TitledBorder overviewThreePanelTitle = BorderFactory.createTitledBorder("Account");
-        TitledBorder overviewFourPanelTitle = BorderFactory.createTitledBorder("Actions");
-        overviewOnePanel.setBorder(overviewOnePanelTitle);
-        overviewTwoPanel.setBorder(overviewTwoPanelTitle);
-        overviewThreePanel.setBorder(overviewThreePanelTitle);
-        overviewFourPanel.setBorder(overviewFourPanelTitle);
+
+        overviewOnePanel.setBorder(BorderFactory.createTitledBorder("Overview"));
+        overviewTwoPanel.setBorder(BorderFactory.createTitledBorder("Customer"));
+        overviewThreePanel.setBorder(BorderFactory.createTitledBorder("Account"));
+        overviewFourPanel.setBorder(BorderFactory.createTitledBorder("Actions"));
         
         quickOptionsPanel.setLayout(new BoxLayout(quickOptionsPanel, BoxLayout.Y_AXIS));
         quickOptionsPanel.add(overviewOnePanel);
         quickOptionsPanel.add(overviewTwoPanel);
         quickOptionsPanel.add(overviewThreePanel);
         quickOptionsPanel.add(overviewFourPanel);
-        //quickOptionsPanel.setBorder(new EmptyBorder(new Insets(45, 70, 45, 70)));
         
         //https://www.daniweb.com/posts/jump/1820204 // https://www.daniweb.com/programming/software-development/threads/425665/add-space-between-components-and-jframe
         //https://docs.oracle.com/javase/tutorial/uiswing/components/border.html
@@ -124,6 +120,44 @@ public class MainWindow extends JFrame
                 
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         this.add(mainPanel);
+    }
+    
+    private void setButtonSizes()
+    {
+        for(JButton jButton : buttonList)
+        {
+            jButton.setPreferredSize(new Dimension(BUTTON_WIDTH,BUTTON_HEIGHT));
+        }
+    }
+    
+    private void addButtonListeners()
+    {
+        ActionListener buttonListener = new ButtonListener();
+        for(JButton jButton : buttonList)
+        {
+            jButton.addActionListener(buttonListener);
+        }
+    }
+    
+    public class ButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == overviewButton)
+                System.out.println("Du har klickat på knappen!");
+            else if(e.getSource() == handleCustomerButton)
+                System.out.println("ROMAYSA");
+            else if(e.getSource() == newCustomerButton)
+                System.out.println("ROMAYSA");
+            else if(e.getSource() == newAccountButton)
+                System.out.println("ROMAYSA");
+            else if(e.getSource() == closeAccountButton)
+                System.out.println("ROMAYSA");
+            else if(e.getSource() == depositButton)
+                System.out.println("ROMAYSA");
+            else if(e.getSource() == withdrawButton)
+                System.out.println("ROMAYSA");
+            else if(e.getSource() == transactionsButton);
+            System.out.println("ROMAYSA");
+        }
     }
     
     private void createMenu()
@@ -158,13 +192,12 @@ public class MainWindow extends JFrame
         menuBar.add(customerMenu);
         menuBar.add(accountMenu);
         menuBar.add(HelpMenu);
-        this.add(menuBar, BorderLayout.NORTH);        
+        this.add(menuBar, BorderLayout.NORTH);
     }
 
     public static void main(String[] args)
     {
         JFrame frame = new MainWindow();
-        frame.setTitle("Saldao-8 Banking System");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
