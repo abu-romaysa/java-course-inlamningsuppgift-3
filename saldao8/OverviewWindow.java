@@ -33,7 +33,11 @@ public class OverviewWindow extends JFrame
 
     private JPanel mainPanel = new JPanel();
     private JPanel customersPanel = new JPanel();
+    private JPanel accountsPanel = new JPanel();
     private JPanel titlePanel = new JPanel();
+    
+    JList customerList = new JList();
+    JList accountList = new JList();
 
     public OverviewWindow()
     {
@@ -53,64 +57,73 @@ public class OverviewWindow extends JFrame
     {
         windowTitleLabel.setFont(new Font("Serif", Font.BOLD, 20)); //https://stackoverflow.com/a/29148550
         titlePanel.add(windowTitleLabel);
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
-          
-        //create a new label 
-        JLabel l= new JLabel("select the day of the week"); 
-        JLabel l2= new JLabel("select the day of the week"); 
-  
-        //String array to store weekdays 
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        
+        customersPanel.setLayout(new GridLayout(2, 2, 20, 5));
+        createCustomerListSection();
+        createAccountListSection();
+        createCustomerDetailSection();
+        createAccountDetailSection();
+        //JLabel l2= new JLabel("select the day of the week"); 
+        //customersPanel.add(l2);
+        customersPanel.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 30));
+                
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(titlePanel);
+        mainPanel.add(customersPanel);
+        
+        this.add(mainPanel);
+    }
+    
+    private void createCustomerListSection()
+    {
+      //String array to store weekdays 
         String week[]= { "Monday","Tuesday","Wednesday", 
                          "Thursday","Friday","Saturday","Sunday"}; 
-          
-        //create list 
-        JList customerList = new JList(week); 
-        JList accountList = new JList(week);  
-        
+        customerList.setListData(week);
         // http://www.java2s.com/Tutorial/Java/0240__Swing/SettingtheSelectionModeofaJListComponent.htm
         customerList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
-        accountList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         
-        //https://stackoverflow.com/a/3094980
-        //LineBorder roundedLineBorder = new LineBorder(Color.black, 5, true);
-        //TitledBorder roundedTitledBorder = new TitledBorder(roundedLineBorder, "List of Customers")
-                
         JPanel customerListPanel = new JPanel();
-        JPanel accountListPanel = new JPanel();
-
-        TitledBorder customerListTitle = BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "List of Customers");
-        customerListTitle.setTitlePosition(TitledBorder.ABOVE_TOP);
-        TitledBorder accountListTitle = BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "List of Accounts");
-        accountListTitle.setTitlePosition(TitledBorder.ABOVE_TOP);
-
-        customerListPanel.setBorder(customerListTitle);
-        accountListPanel.setBorder(accountListTitle);
-
-        customersPanel.setLayout(new GridLayout(2, 2, 20, 5));
         //https://stackoverflow.com/a/20359885
         customerListPanel.setLayout(new BorderLayout());
         customerListPanel.add(customerList);
+        
+        TitledBorder customerListTitle = BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "List of Customers");
+        customerListTitle.setTitlePosition(TitledBorder.ABOVE_TOP);
+        customerListPanel.setBorder(customerListTitle);
+        
+        customersPanel.add(customerListPanel);
+    }
+    
+    private void createAccountListSection()
+    {  
+        //String array to store weekdays 
+        String week[]= { "Monday","Tuesday","Wednesday", 
+                         "Thursday","Friday","Saturday","Sunday"}; 
+        accountList.setListData(week);
+        accountList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+
+        JPanel accountListPanel = new JPanel();
         accountListPanel.setLayout(new BorderLayout());
         accountListPanel.add(accountList);
-        customersPanel.add(customerListPanel);
+
+        TitledBorder accountListTitle = BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "List of Accounts");
+        accountListTitle.setTitlePosition(TitledBorder.ABOVE_TOP);
+        accountListPanel.setBorder(accountListTitle);
+
         customersPanel.add(accountListPanel);
-        
+    }
+    
+    private void createCustomerDetailSection()
+    {
         JPanel customerDetailsPanel = new JPanel();
-        JPanel customerPNRPanel = new JPanel();
-        JPanel customerDetailsNamePanel = new JPanel();
-        JPanel customerDetailsButtonsPanel = new JPanel();
-        JPanel emptyPanel = new JPanel();
         
         JPanel customerDetailsTextPanel = new JPanel();
         customerDetailsTextPanel.setLayout(new GridLayout(3, 2, 2, 2));
-        customerDetailsNamePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        customerPNRPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         JTextField customerFirstNameTextField = new JTextField("name", 10);
         JTextField customerLastNameTextField = new JTextField("last", 10);
         JTextField customerPNRTextField = new JTextField("pnr", 10);
-        //customerDetailsNamePanel.add(customerFirstNameTextField);
-        //customerDetailsNamePanel.add(customerLastNameTextField);
-        
         JLabel firstNameLabel = new JLabel("First Name");
         JLabel lastNameLabel = new JLabel("Last Name");
         customerDetailsTextPanel.add(firstNameLabel);
@@ -119,34 +132,68 @@ public class OverviewWindow extends JFrame
         customerDetailsTextPanel.add(customerLastNameTextField);
         customerDetailsTextPanel.add(customerPNRTextField);
         
-        //customerPNRPanel.add(customerPNRTextField);
-        
+        JPanel customerDetailsButtonsPanel = new JPanel();
         JButton updateButton = new JButton("Update");
         JButton deleteButton = new JButton("Delete");
         customerDetailsButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 0));
         customerDetailsButtonsPanel.add(updateButton);
         customerDetailsButtonsPanel.add(deleteButton);
+        customerDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
         
-        //customerDetailsPanel.setLayout(new BoxLayout(customerDetailsPanel, BoxLayout.Y_AXIS));
         customerDetailsPanel.setLayout(new BorderLayout());
-        //customerDetailsPanel.add(emptyPanel);
         customerDetailsPanel.add(customerDetailsTextPanel);
         customerDetailsPanel.add(customerDetailsButtonsPanel, BorderLayout.SOUTH);
-        //customerDetailsPanel.add(customerPNRPanel);
-        //customerDetailsPanel.add(emptyPanel);
         TitledBorder customerDetailTitle = BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "Customer Information");
         customerDetailTitle.setTitlePosition(TitledBorder.ABOVE_TOP);
         customerDetailsPanel.setBorder(customerDetailTitle);
         
         customersPanel.add(customerDetailsPanel);
-        customersPanel.add(l2);
-        customersPanel.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 30));
-                
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(titlePanel);
-        mainPanel.add(customersPanel);
+    }
+    
+    private void createAccountDetailSection()
+    {
+        JPanel accountDetailsPanel = new JPanel();
         
-        this.add(mainPanel);
+        JPanel accountDetailsTextPanel = new JPanel();
+        accountDetailsTextPanel.setLayout(new GridLayout(4, 2, 2, 2));
+        JTextField accountTypeTextField = new JTextField("type", 10);
+        JTextField accountInterestTextField = new JTextField("interest", 10);
+        JTextField accountBalanceTextField = new JTextField("balance", 10);
+        JTextField accountCreditTextField = new JTextField("credit", 10);
+        accountCreditTextField.setVisible(false);
+        JLabel typeLabel = new JLabel("Type");
+        JLabel interestLabel = new JLabel("Interest");
+        JLabel balanceLabel = new JLabel("Balance");
+        JLabel creditLabel = new JLabel("Credit");
+        creditLabel.setVisible(false);
+
+        accountDetailsTextPanel.add(typeLabel);
+        accountDetailsTextPanel.add(interestLabel);
+        accountDetailsTextPanel.add(accountTypeTextField);
+        accountDetailsTextPanel.add(accountInterestTextField);
+        accountDetailsTextPanel.add(balanceLabel);
+        accountDetailsTextPanel.add(creditLabel);
+        accountDetailsTextPanel.add(accountBalanceTextField);
+        accountDetailsTextPanel.add(accountCreditTextField);
+        
+        JPanel accountDetailsButtonsPanel = new JPanel();
+        JButton addButton = new JButton("Add Account");
+        JButton deleteButton = new JButton("Delete");
+        JButton transactionButton = new JButton("View Transactions");
+        accountDetailsButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 0));
+        accountDetailsButtonsPanel.add(addButton);
+        accountDetailsButtonsPanel.add(deleteButton);
+        accountDetailsButtonsPanel.add(transactionButton);
+        accountDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        
+        accountDetailsPanel.setLayout(new BorderLayout());
+        accountDetailsPanel.add(accountDetailsTextPanel);
+        accountDetailsPanel.add(accountDetailsButtonsPanel, BorderLayout.SOUTH);
+        TitledBorder accountDetailTitle = BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "Account Information");
+        accountDetailTitle.setTitlePosition(TitledBorder.ABOVE_TOP);
+        accountDetailsPanel.setBorder(accountDetailTitle);
+        
+        customersPanel.add(accountDetailsPanel);
     }
     
     private void createMenu()
