@@ -7,22 +7,32 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import java.awt.GridLayout;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import saldao8.MainWindow.ButtonListener;
 
 public class OverviewWindow extends JFrame
 {
@@ -33,15 +43,35 @@ public class OverviewWindow extends JFrame
 
     private JPanel mainPanel = new JPanel();
     private JPanel customersPanel = new JPanel();
-    private JPanel accountsPanel = new JPanel();
     private JPanel titlePanel = new JPanel();
+
+    private JButton updateButton = new JButton("Update");
+    private JButton newButton = new JButton("New");
+    private JButton deleteButton = new JButton("Delete");
+
+    private JTextField customerFirstNameTextField = new JTextField("", 10);
+    private JTextField customerLastNameTextField = new JTextField("", 10);
+    private JTextField customerPNRTextField = new JTextField("", 10);
     
-    JList customerList = new JList();
-    JList accountList = new JList();
+    private JList customerList = new JList();
+    private JList accountList = new JList();
+    
+    private ArrayList<String> customersList = new ArrayList<String>(); //todo
+    
+    private JFrame thisWin;
+    private JDialog newCustomerDialog;
+    
+    BankLogic bankLogic = new BankLogic();
 
     public OverviewWindow()
     {
+        thisWin = this;
+        
         createMenu();
+        
+        // todo
+        customersList.add("Salim Daoud 19811113-0376");
+        customersList.add("Hanae Bouloussaa 19890501-8407");
         
         // inspiration https://www.google.se/search?q=java+gui+for+simple+bank+system&rlz=1C1GCEU_svSE820SE821&source=lnms&tbm=isch&sa=X&ved=0ahUKEwj0pcTDqJbfAhWFCCwKHU3UC_kQ_AUIDigB&biw=1187&bih=618#imgrc=pcaBZZeDE5ShtM:
         createWindowContent();
@@ -73,16 +103,24 @@ public class OverviewWindow extends JFrame
         mainPanel.add(customersPanel);
         
         this.add(mainPanel);
+        
+        //setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+//        newCustomerDialog = new createCustomerDialog(this, "New Customer", true);
+//        newCustomerDialog.setLocationRelativeTo(this);
+//        newCustomerDialog.setVisible(false);
     }
     
     private void createCustomerListSection()
     {
       //String array to store weekdays 
-        String week[]= { "Monday","Tuesday","Wednesday", 
-                         "Thursday","Friday","Saturday","Sunday"}; 
-        customerList.setListData(week);
+        //String week[]= { "Monday","Tuesday","Wednesday", 
+        //                 "Thursday","Friday","Saturday","Sunday"}; 
+        customerList.setListData(customersList.toArray());
         // http://www.java2s.com/Tutorial/Java/0240__Swing/SettingtheSelectionModeofaJListComponent.htm
         customerList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        customerList.setSelectedIndex(0);
+        customerList.addListSelectionListener(new ListSelectionHandler());
         
         JPanel customerListPanel = new JPanel();
         //https://stackoverflow.com/a/20359885
@@ -121,9 +159,6 @@ public class OverviewWindow extends JFrame
         
         JPanel customerDetailsTextPanel = new JPanel();
         customerDetailsTextPanel.setLayout(new GridLayout(3, 2, 2, 2));
-        JTextField customerFirstNameTextField = new JTextField("name", 10);
-        JTextField customerLastNameTextField = new JTextField("last", 10);
-        JTextField customerPNRTextField = new JTextField("pnr", 10);
         JLabel firstNameLabel = new JLabel("First Name");
         JLabel lastNameLabel = new JLabel("Last Name");
         customerDetailsTextPanel.add(firstNameLabel);
@@ -132,12 +167,24 @@ public class OverviewWindow extends JFrame
         customerDetailsTextPanel.add(customerLastNameTextField);
         customerDetailsTextPanel.add(customerPNRTextField);
         
+        if(!customerList.isSelectionEmpty())
+        {
+            String selectedListCustomer = (String) customerList.getSelectedValue();
+            String[] selectedCustomer = selectedListCustomer.split(" "); // simple for simple case
+            customerFirstNameTextField.setText(selectedCustomer[0]);
+            customerLastNameTextField.setText(selectedCustomer[1]);
+            customerPNRTextField.setText(selectedCustomer[2]);
+        }
+        
         JPanel customerDetailsButtonsPanel = new JPanel();
-        JButton updateButton = new JButton("Update");
-        JButton deleteButton = new JButton("Delete");
         customerDetailsButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 0));
         customerDetailsButtonsPanel.add(updateButton);
+        customerDetailsButtonsPanel.add(newButton);
         customerDetailsButtonsPanel.add(deleteButton);
+        ActionListener buttonListener = new ButtonListener();
+        updateButton.addActionListener(buttonListener);
+        newButton.addActionListener(buttonListener);
+        deleteButton.addActionListener(buttonListener);
         customerDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
         
         customerDetailsPanel.setLayout(new BorderLayout());
@@ -150,6 +197,48 @@ public class OverviewWindow extends JFrame
         customersPanel.add(customerDetailsPanel);
     }
     
+    // https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/uiswing/examples/events/ListSelectionDemoProject/src/events/ListSelectionDemo.java
+    public class ListSelectionHandler implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) { 
+            int idx = customerList.getSelectedIndex();
+            if(idx != -1)
+            {
+                String selectedListCustomer = (String) customerList.getSelectedValue();
+                String[] selectedCustomer = selectedListCustomer.split(" "); // simple for simple case
+                customerFirstNameTextField.setText(selectedCustomer[0]);
+                customerLastNameTextField.setText(selectedCustomer[1]);
+                customerPNRTextField.setText(selectedCustomer[2]);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
+            }
+        }
+    }
+
+    public class ButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == newButton)
+            {
+                //JFrame newCustomerWin = new createCustomerWin();
+                //JDialog newCustomerDialog = new createCustomerDialog(thisWin, "New Customer", true);
+                ////newCustomerDialog.setVisible(true);
+                //JFrame frame = new createCustomerWin();
+                //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                //newCustomerWin.setVisible(true);
+                
+                
+                newCustomerDialog = new createCustomerDialog(bankLogic, thisWin, "New Customer", true);
+                newCustomerDialog.setLocationRelativeTo(thisWin);
+                newCustomerDialog.setVisible(true);
+            }
+            else if(e.getSource() == updateButton)
+                System.out.println("ROMAYSA");
+            else if(e.getSource() == deleteButton)
+                System.out.println("ROMAYSA");
+        }
+    }
+
     private void createAccountDetailSection()
     {
         JPanel accountDetailsPanel = new JPanel();
