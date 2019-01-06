@@ -46,8 +46,9 @@ public class OverviewWindow extends JFrame
     private JPanel titlePanel = new JPanel();
 
     private JButton updateButton = new JButton("Update");
-    private JButton newButton = new JButton("New");
+    private JButton addButton = new JButton("Add");
     private JButton deleteButton = new JButton("Delete");
+    private JButton clearButton = new JButton("Clear");
 
     private JTextField customerFirstNameTextField = new JTextField("", 10);
     private JTextField customerLastNameTextField = new JTextField("", 10);
@@ -58,20 +59,20 @@ public class OverviewWindow extends JFrame
     
     private ArrayList<String> customersList = new ArrayList<String>(); //todo
     
-    private JFrame thisWin;
-    private JDialog newCustomerDialog;
+    //private JFrame thisWin;
+    //private JDialog newCustomerDialog;
     
     BankLogic bankLogic = new BankLogic();
 
     public OverviewWindow()
     {
-        thisWin = this;
+        //thisWin = this;
         
         createMenu();
         
         // todo
-        customersList.add("Salim Daoud 19811113-0376");
-        customersList.add("Hanae Bouloussaa 19890501-8407");
+        //customersList.add("Salim Daoud 19811113-0376");
+        //customersList.add("Hanae Bouloussaa 19890501-8407");
         
         // inspiration https://www.google.se/search?q=java+gui+for+simple+bank+system&rlz=1C1GCEU_svSE820SE821&source=lnms&tbm=isch&sa=X&ved=0ahUKEwj0pcTDqJbfAhWFCCwKHU3UC_kQ_AUIDigB&biw=1187&bih=618#imgrc=pcaBZZeDE5ShtM:
         createWindowContent();
@@ -179,12 +180,14 @@ public class OverviewWindow extends JFrame
         JPanel customerDetailsButtonsPanel = new JPanel();
         customerDetailsButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 0));
         customerDetailsButtonsPanel.add(updateButton);
-        customerDetailsButtonsPanel.add(newButton);
+        customerDetailsButtonsPanel.add(addButton);
         customerDetailsButtonsPanel.add(deleteButton);
+        customerDetailsButtonsPanel.add(clearButton);
         ActionListener buttonListener = new ButtonListener();
         updateButton.addActionListener(buttonListener);
-        newButton.addActionListener(buttonListener);
+        addButton.addActionListener(buttonListener);
         deleteButton.addActionListener(buttonListener);
+        clearButton.addActionListener(buttonListener);
         customerDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
         
         customerDetailsPanel.setLayout(new BorderLayout());
@@ -209,34 +212,79 @@ public class OverviewWindow extends JFrame
                 customerLastNameTextField.setText(selectedCustomer[1]);
                 customerPNRTextField.setText(selectedCustomer[2]);
             }
-            else
+            /*else
             {
                 JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
-            }
+            }*/
         }
     }
 
     public class ButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if(e.getSource() == newButton)
+
+            if(e.getSource() == addButton)
             {
-                //JFrame newCustomerWin = new createCustomerWin();
-                //JDialog newCustomerDialog = new createCustomerDialog(thisWin, "New Customer", true);
-                ////newCustomerDialog.setVisible(true);
-                //JFrame frame = new createCustomerWin();
-                //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                //newCustomerWin.setVisible(true);
-                
-                
-                newCustomerDialog = new createCustomerDialog(bankLogic, thisWin, "New Customer", true);
-                newCustomerDialog.setLocationRelativeTo(thisWin);
-                newCustomerDialog.setVisible(true);
+                if(bankLogic.createCustomer(customerFirstNameTextField.getText(), 
+                                            customerLastNameTextField.getText(), 
+                                            customerPNRTextField.getText()))
+                {
+                    customerList.setListData(bankLogic.getAllCustomers().toArray());
+                    clearTextFields();
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Customer already exists", "Alert", JOptionPane.ERROR_MESSAGE);
+                }
             }
-            else if(e.getSource() == updateButton)
-                System.out.println("ROMAYSA");
-            else if(e.getSource() == deleteButton)
-                System.out.println("ROMAYSA");
+
+            if(e.getSource() == updateButton)
+            {
+                int idx = customerList.getSelectedIndex();
+                if(idx != -1)
+                {
+                    String firstName = customerFirstNameTextField.getText();
+                    String lastName = customerLastNameTextField.getText();
+                    String personalIdentityNumber = customerPNRTextField.getText();
+                    bankLogic.changeCustomerName(firstName, lastName, personalIdentityNumber);
+                    System.out.println(bankLogic.getAllCustomers());
+                    customerList.setListData(bankLogic.getAllCustomers().toArray());
+                    clearTextFields();
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
+                }
+            }
+
+            if(e.getSource() == deleteButton)
+            {
+                int idx = customerList.getSelectedIndex();
+                if(idx != -1)
+                {
+                    String selectedListCustomer = (String) customerList.getSelectedValue();
+                    System.out.println(selectedListCustomer);
+                    String[] selectedCustomer = selectedListCustomer.split(" "); // simple for simple case
+                    String personalIdentityNumber = selectedCustomer[2];
+                    bankLogic.deleteCustomer(personalIdentityNumber);
+                    customerList.setListData(bankLogic.getAllCustomers().toArray());
+                    clearTextFields();
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
+                }
+            }
+
+            if(e.getSource() == clearButton)
+                clearTextFields();
         }
+    }
+    
+    private void clearTextFields()
+    {
+        customerFirstNameTextField.setText("");
+        customerLastNameTextField.setText("");
+        customerPNRTextField.setText("");
     }
 
     private void createAccountDetailSection()
@@ -246,6 +294,7 @@ public class OverviewWindow extends JFrame
         JPanel accountDetailsTextPanel = new JPanel();
         accountDetailsTextPanel.setLayout(new GridLayout(4, 2, 2, 2));
         JTextField accountTypeTextField = new JTextField("type", 10);
+        accountTypeTextField.setEditable(false);
         JTextField accountInterestTextField = new JTextField("interest", 10);
         JTextField accountBalanceTextField = new JTextField("balance", 10);
         JTextField accountCreditTextField = new JTextField("credit", 10);

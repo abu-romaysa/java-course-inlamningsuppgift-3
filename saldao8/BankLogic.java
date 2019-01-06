@@ -100,12 +100,13 @@ public class BankLogic implements AccountTypes
         Customer customer = findCustomer(personalIdentityNumber);
         if(customer != null)
         {
+            System.out.println("found");
             customer.changeFirstName(firstName);
             customer.changeLastName(lastName);
 
             return true;
         }
-
+        System.out.println("not found");
         return false;
     }
 
@@ -283,7 +284,8 @@ public class BankLogic implements AccountTypes
     {
         for(Customer customer : customers)
         {
-            if(customer.getPersonalIdentityNumber() == personalIdentityNumber)
+            // todo from == to equals https://www.journaldev.com/18009/java-string-compare#java-string-comparison-using-operator
+            if(customer.getPersonalIdentityNumber().equals(personalIdentityNumber))
             {
                 return customer;
             }
