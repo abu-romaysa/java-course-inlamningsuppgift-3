@@ -10,7 +10,7 @@ package saldao8;
 public class CreditAccount extends Account
 {
     private double creditLimit;
-    private final static String ACCOUNT_TYPE = "Kreditkonto";
+    private final static String ACCOUNT_TYPE = "Credit account";
     
     /**
      * Constructor
@@ -87,5 +87,10 @@ public class CreditAccount extends Account
     protected String getAccountType()
     {
         return ACCOUNT_TYPE;
+    }
+    
+    public double getCreditLimit()
+    {
+        return creditLimit;
     }
 }

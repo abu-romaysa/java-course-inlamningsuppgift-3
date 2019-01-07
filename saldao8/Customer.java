@@ -180,6 +180,11 @@ public class Customer implements AccountTypes
         Account account = findAccount(accountId);
         if(account != null)
         {
+            if(account instanceof CreditAccount)
+            {
+                return account.toString() + " " + Double.toString(((CreditAccount) account).getCreditLimit());
+            }
+
             return account.toString();
         }
 

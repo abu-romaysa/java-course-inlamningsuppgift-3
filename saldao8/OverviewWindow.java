@@ -32,12 +32,13 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import saldao8.AccountTypes.AccountType;
 import saldao8.MainWindow.ButtonListener;
 
 public class OverviewWindow extends JFrame
 {
     private static final int FRAME_WIDTH = 800;
-    private static final int FRAME_HEIGHT = 600;
+    private static final int FRAME_HEIGHT = 800;
     
     private JLabel windowTitleLabel = new JLabel("SYSTEM OVERVIEW");
 
@@ -56,24 +57,24 @@ public class OverviewWindow extends JFrame
     
     private JList customerList = new JList();
     private JList accountList = new JList();
+
+    JButton addAccountButton = new JButton("Add Account");
+    JTextField accountTypeTextField = new JTextField(10);
+    JTextField accountInterestTextField = new JTextField(10);
+    JTextField accountBalanceTextField = new JTextField(10);
+    JTextField accountCreditTextField = new JTextField(10);
+    JLabel creditLabel = new JLabel("Credit");
     
-    private ArrayList<String> customersList = new ArrayList<String>(); //todo
-    
-    //private JFrame thisWin;
-    //private JDialog newCustomerDialog;
+    private OverviewWindow thisWin;
     
     BankLogic bankLogic = new BankLogic();
 
     public OverviewWindow()
     {
-        //thisWin = this;
+        thisWin = this;
         
         createMenu();
-        
-        // todo
-        //customersList.add("Salim Daoud 19811113-0376");
-        //customersList.add("Hanae Bouloussaa 19890501-8407");
-        
+
         // inspiration https://www.google.se/search?q=java+gui+for+simple+bank+system&rlz=1C1GCEU_svSE820SE821&source=lnms&tbm=isch&sa=X&ved=0ahUKEwj0pcTDqJbfAhWFCCwKHU3UC_kQ_AUIDigB&biw=1187&bih=618#imgrc=pcaBZZeDE5ShtM:
         createWindowContent();
         
@@ -88,36 +89,26 @@ public class OverviewWindow extends JFrame
     {
         windowTitleLabel.setFont(new Font("Serif", Font.BOLD, 20)); //https://stackoverflow.com/a/29148550
         titlePanel.add(windowTitleLabel);
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         
         customersPanel.setLayout(new GridLayout(2, 2, 20, 5));
         createCustomerListSection();
         createAccountListSection();
         createCustomerDetailSection();
         createAccountDetailSection();
-        //JLabel l2= new JLabel("select the day of the week"); 
-        //customersPanel.add(l2);
         customersPanel.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 30));
-                
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.add(titlePanel);
+
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(titlePanel, BorderLayout.NORTH);
         mainPanel.add(customersPanel);
         
         this.add(mainPanel);
         
         //setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
-//        newCustomerDialog = new createCustomerDialog(this, "New Customer", true);
-//        newCustomerDialog.setLocationRelativeTo(this);
-//        newCustomerDialog.setVisible(false);
     }
     
     private void createCustomerListSection()
     {
-      //String array to store weekdays 
-        //String week[]= { "Monday","Tuesday","Wednesday", 
-        //                 "Thursday","Friday","Saturday","Sunday"}; 
-        customerList.setListData(customersList.toArray());
         // http://www.java2s.com/Tutorial/Java/0240__Swing/SettingtheSelectionModeofaJListComponent.htm
         customerList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         customerList.setSelectedIndex(0);
@@ -137,11 +128,8 @@ public class OverviewWindow extends JFrame
     
     private void createAccountListSection()
     {  
-        //String array to store weekdays 
-        String week[]= { "Monday","Tuesday","Wednesday", 
-                         "Thursday","Friday","Saturday","Sunday"}; 
-        accountList.setListData(week);
         accountList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        accountList.addListSelectionListener(new AccountsListSelectionHandler());
 
         JPanel accountListPanel = new JPanel();
         accountListPanel.setLayout(new BorderLayout());
@@ -188,7 +176,7 @@ public class OverviewWindow extends JFrame
         addButton.addActionListener(buttonListener);
         deleteButton.addActionListener(buttonListener);
         clearButton.addActionListener(buttonListener);
-        customerDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 0));
+        customerDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
         
         customerDetailsPanel.setLayout(new BorderLayout());
         customerDetailsPanel.add(customerDetailsTextPanel);
@@ -211,11 +199,50 @@ public class OverviewWindow extends JFrame
                 customerFirstNameTextField.setText(selectedCustomer[0]);
                 customerLastNameTextField.setText(selectedCustomer[1]);
                 customerPNRTextField.setText(selectedCustomer[2]);
+                
+                accountList.setListData(bankLogic.getAccountIds(selectedCustomer[2]).toArray());
             }
-            /*else
+        }
+    }
+    
+    public class AccountsListSelectionHandler implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) { 
+            int idx = accountList.getSelectedIndex();
+            if(idx != -1)
             {
-                JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
-            }*/
+                int selectedListAccount = (int) accountList.getSelectedValue();
+                
+                String accountInfo = bankLogic.getAccount(selectedListAccount);
+                if(accountInfo != null)
+                {
+                    String[] accountSubInfo = accountInfo.split(" ");
+                    String accountType = accountSubInfo[2] + " " + accountSubInfo[3];
+                    
+                    accountBalanceTextField.setText(accountSubInfo[1]);
+                    accountTypeTextField.setText(accountType);
+                    accountInterestTextField.setText(accountSubInfo[4]);
+                    
+                    if(accountType.equals("Credit account"))
+                    {
+                        accountCreditTextField.setText(accountSubInfo[5]);
+                        accountCreditTextField.setVisible(true);
+                        creditLabel.setVisible(true);
+                    }
+                    else
+                    {
+                        accountCreditTextField.setVisible(false);
+                        creditLabel.setVisible(false);
+                    }
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Customer does not exists", "Alert", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else
+            {
+                clearAccountTextFields();
+            }
         }
     }
 
@@ -286,52 +313,94 @@ public class OverviewWindow extends JFrame
         customerLastNameTextField.setText("");
         customerPNRTextField.setText("");
     }
+    
+    private void clearAccountTextFields()
+    {
+        accountTypeTextField.setText("");
+        accountInterestTextField.setText("");
+        accountBalanceTextField.setText("");
+        accountCreditTextField.setText("");
+    }
 
     private void createAccountDetailSection()
     {
         JPanel accountDetailsPanel = new JPanel();
         
-        JPanel accountDetailsTextPanel = new JPanel();
-        accountDetailsTextPanel.setLayout(new GridLayout(4, 2, 2, 2));
-        JTextField accountTypeTextField = new JTextField("type", 10);
-        accountTypeTextField.setEditable(false);
-        JTextField accountInterestTextField = new JTextField("interest", 10);
-        JTextField accountBalanceTextField = new JTextField("balance", 10);
-        JTextField accountCreditTextField = new JTextField("credit", 10);
-        accountCreditTextField.setVisible(false);
+        accountDetailsPanel.setLayout(new GridLayout(1, 2, 5, 0));
+        
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new GridLayout(8, 1));
+        
         JLabel typeLabel = new JLabel("Type");
         JLabel interestLabel = new JLabel("Interest");
         JLabel balanceLabel = new JLabel("Balance");
-        JLabel creditLabel = new JLabel("Credit");
+        
+        accountTypeTextField.setEditable(false);
+        accountInterestTextField.setEditable(false);
+        accountBalanceTextField.setEditable(false);
+        accountCreditTextField.setEditable(false);
+        accountCreditTextField.setVisible(false);
         creditLabel.setVisible(false);
 
-        accountDetailsTextPanel.add(typeLabel);
-        accountDetailsTextPanel.add(interestLabel);
-        accountDetailsTextPanel.add(accountTypeTextField);
-        accountDetailsTextPanel.add(accountInterestTextField);
-        accountDetailsTextPanel.add(balanceLabel);
-        accountDetailsTextPanel.add(creditLabel);
-        accountDetailsTextPanel.add(accountBalanceTextField);
-        accountDetailsTextPanel.add(accountCreditTextField);
+        leftPanel.add(typeLabel);
+        leftPanel.add(accountTypeTextField);
+        leftPanel.add(balanceLabel);
+        leftPanel.add(accountBalanceTextField);
+        leftPanel.add(interestLabel);
+        leftPanel.add(accountInterestTextField);
+        leftPanel.add(creditLabel);
+        leftPanel.add(accountCreditTextField);
         
-        JPanel accountDetailsButtonsPanel = new JPanel();
-        JButton addButton = new JButton("Add Account");
+        JPanel rightPanel = new JPanel();
+        addAccountButton = new JButton("Add Account");
         JButton deleteButton = new JButton("Delete");
+        JButton depositButton = new JButton("Deposit");
+        JButton widthdrawButton = new JButton("Widthdraw");
         JButton transactionButton = new JButton("View Transactions");
-        accountDetailsButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 0));
-        accountDetailsButtonsPanel.add(addButton);
-        accountDetailsButtonsPanel.add(deleteButton);
-        accountDetailsButtonsPanel.add(transactionButton);
-        accountDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        JLabel empty = new JLabel();
         
-        accountDetailsPanel.setLayout(new BorderLayout());
-        accountDetailsPanel.add(accountDetailsTextPanel);
-        accountDetailsPanel.add(accountDetailsButtonsPanel, BorderLayout.SOUTH);
+        rightPanel.setLayout(new GridLayout(7, 1, 0, 5));
+        rightPanel.add(addAccountButton);
+        rightPanel.add(deleteButton);
+        rightPanel.add(depositButton);
+        rightPanel.add(widthdrawButton);
+        rightPanel.add(transactionButton);
+        rightPanel.add(empty);
+        rightPanel.add(empty);
+        rightPanel.add(empty);
+        
+        ActionListener accountButtonListener = new AccountButtonListener();
+        addAccountButton.addActionListener(accountButtonListener);
+
+        accountDetailsPanel.add(leftPanel);
+        accountDetailsPanel.add(rightPanel);
         TitledBorder accountDetailTitle = BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(), "Account Information");
         accountDetailTitle.setTitlePosition(TitledBorder.ABOVE_TOP);
         accountDetailsPanel.setBorder(accountDetailTitle);
         
         customersPanel.add(accountDetailsPanel);
+    }
+    
+    public class AccountButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+
+            if(e.getSource() == addAccountButton)
+            {
+                int idx = customerList.getSelectedIndex();
+                if(idx != -1)
+                {
+                    String selectedListCustomer = (String) customerList.getSelectedValue();
+                    String[] selectedCustomer = selectedListCustomer.split(" "); // simple for simple case
+
+                    JDialog addAccountDialog = new AddAccountDialog(thisWin, selectedCustomer[2]);
+                    addAccountDialog.setVisible(true);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
+                }
+            }
+        }
     }
     
     private void createMenu()
@@ -367,6 +436,32 @@ public class OverviewWindow extends JFrame
         menuBar.add(accountMenu);
         menuBar.add(HelpMenu);
         this.add(menuBar, BorderLayout.NORTH);
+    }
+    
+    public boolean createSavingsAccount(String personalIdentityNumber)
+    {
+        if(bankLogic.createSavingsAccount(personalIdentityNumber) != -1)
+        {
+            accountList.setListData(bankLogic.getAccountIds(personalIdentityNumber).toArray());
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
+    }
+    
+    public boolean createCreditAccount(String personalIdentityNumber)
+    {
+        if(bankLogic.createCreditAccount(personalIdentityNumber) != -1)
+        {
+            accountList.setListData(bankLogic.getAccountIds(personalIdentityNumber).toArray());
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
     }
     
     public static void main(String[] args)

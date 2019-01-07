@@ -11,7 +11,7 @@ public class SavingsAccount extends Account
 {
     private boolean neverWithdrawn;
     private static double interestRate4Withdrawal;
-    private final static String ACCOUNT_TYPE = "Sparkonto";
+    private final static String ACCOUNT_TYPE = "Savings account";
 
     /**
      * Constructor

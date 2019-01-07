@@ -48,6 +48,14 @@ public class createCustomerDialog extends JDialog implements ActionListener
 //        customerFirstNameTextField.setText("");
 //        customerLastNameTextField.setText("");
 //        customerPNRTextField.setText("");
+        
+        // i overview win
+      //JFrame newCustomerWin = new createCustomerWin();
+        //JDialog newCustomerDialog = new createCustomerDialog(thisWin, "New Customer", true);
+        ////newCustomerDialog.setVisible(true);
+        //JFrame frame = new createCustomerWin();
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //newCustomerWin.setVisible(true);
     }
 
     private void createWindowContent()

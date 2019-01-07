@@ -86,6 +86,17 @@ public class BankLogic implements AccountTypes
 
         return null;
     }
+    
+    public ArrayList<Integer> getAccountIds(String personalIdentityNumber)
+    {
+        Customer customer = findCustomer(personalIdentityNumber);
+        if(customer != null)
+        {
+            return customer.getAccountIds();
+        }
+        
+        return null;
+    }
 
     /**
      * Changes a customer's first and last name
@@ -204,12 +215,26 @@ public class BankLogic implements AccountTypes
      * @return string containing information about the customer's account,
      *         otherwise null if it could not be found
      */
-    public String getAccount(String personalIdentityNumber, int accountId)
+//    public String getAccount(String personalIdentityNumber, int accountId)
+//    {
+//        Customer customer = findCustomer(personalIdentityNumber);
+//        if(customer != null)
+//        {
+//            return customer.getAccount(accountId);
+//        }
+//
+//        return null;
+//    }
+    
+    public String getAccount(int accountId)
     {
-        Customer customer = findCustomer(personalIdentityNumber);
-        if(customer != null)
+        for(Customer customer : customers)
         {
-            return customer.getAccount(accountId);
+            String accountInfo = customer.getAccount(accountId);
+            if(accountInfo != null)
+            {
+                return accountInfo;
+            }
         }
 
         return null;
