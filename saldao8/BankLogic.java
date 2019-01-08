@@ -158,14 +158,28 @@ public class BankLogic implements AccountTypes
      * @return string containing information about the customer's closed
      *         account, otherwise null if it could not be closed
      */
-    public String closeAccount(String personalIdentityNumber, int accountId)
+//    public String closeAccount(String personalIdentityNumber, int accountId)
+//    {
+//        Customer customer = findCustomer(personalIdentityNumber);
+//        if(customer != null)
+//        {
+//            String closedAccountInfo = customer.removeAccount(accountId);
+//            System.out.println(closedAccountInfo);
+//            return closedAccountInfo;
+//        }
+//
+//        return null;
+//    }
+    
+    public String closeAccount(int accountId)
     {
-        Customer customer = findCustomer(personalIdentityNumber);
-        if(customer != null)
+        for(Customer customer : customers)
         {
-            String closedAccountInfo = customer.removeAccount(accountId);
-            System.out.println(closedAccountInfo);
-            return closedAccountInfo;
+            String accountInfo = customer.getAccount(accountId);
+            if(accountInfo != null)
+            {
+                return customer.removeAccount(accountId);
+            }
         }
 
         return null;

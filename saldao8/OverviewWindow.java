@@ -1,20 +1,13 @@
 package saldao8;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import java.awt.GridLayout;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -27,15 +20,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import saldao8.AccountTypes.AccountType;
-import saldao8.MainWindow.ButtonListener;
 
-public class OverviewWindow extends JFrame
+public class OverviewWindow extends JFrame implements AccountTypes
 {
     private static final int FRAME_WIDTH = 800;
     private static final int FRAME_HEIGHT = 800;
@@ -59,6 +49,10 @@ public class OverviewWindow extends JFrame
     private JList accountList = new JList();
 
     JButton addAccountButton = new JButton("Add Account");
+    JButton deleteAccountButton = new JButton("Delete");
+    JButton depositButton = new JButton("Deposit");
+    JButton widthdrawButton = new JButton("Widthdraw");
+    JButton transactionButton = new JButton("View Transactions");
     JTextField accountTypeTextField = new JTextField(10);
     JTextField accountInterestTextField = new JTextField(10);
     JTextField accountBalanceTextField = new JTextField(10);
@@ -67,7 +61,10 @@ public class OverviewWindow extends JFrame
     
     private OverviewWindow thisWin;
     
-    BankLogic bankLogic = new BankLogic();
+    private BankLogic bankLogic = new BankLogic();
+    
+    public static final int DEPOSIT = 1;
+    public static final int WITHDRAW = 2;
 
     public OverviewWindow()
     {
@@ -352,16 +349,11 @@ public class OverviewWindow extends JFrame
         leftPanel.add(accountCreditTextField);
         
         JPanel rightPanel = new JPanel();
-        addAccountButton = new JButton("Add Account");
-        JButton deleteButton = new JButton("Delete");
-        JButton depositButton = new JButton("Deposit");
-        JButton widthdrawButton = new JButton("Widthdraw");
-        JButton transactionButton = new JButton("View Transactions");
         JLabel empty = new JLabel();
         
         rightPanel.setLayout(new GridLayout(7, 1, 0, 5));
         rightPanel.add(addAccountButton);
-        rightPanel.add(deleteButton);
+        rightPanel.add(deleteAccountButton);
         rightPanel.add(depositButton);
         rightPanel.add(widthdrawButton);
         rightPanel.add(transactionButton);
@@ -371,6 +363,10 @@ public class OverviewWindow extends JFrame
         
         ActionListener accountButtonListener = new AccountButtonListener();
         addAccountButton.addActionListener(accountButtonListener);
+        deleteAccountButton.addActionListener(accountButtonListener);
+        depositButton.addActionListener(accountButtonListener);
+        widthdrawButton.addActionListener(accountButtonListener);
+        transactionButton.addActionListener(accountButtonListener);
 
         accountDetailsPanel.add(leftPanel);
         accountDetailsPanel.add(rightPanel);
@@ -400,6 +396,79 @@ public class OverviewWindow extends JFrame
                     JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
                 }
             }
+            
+            if(e.getSource() == deleteAccountButton)
+            {
+                int account_idx = accountList.getSelectedIndex();
+                int customer_idx = customerList.getSelectedIndex();
+
+                if(account_idx != -1 && customer_idx != -1)
+                {          
+                    int selectedListAccount = (int) accountList.getSelectedValue();
+                    
+                    int selectedOption = JOptionPane.showConfirmDialog(
+                            null, 
+                            "Are you sure you want to delete account: " + selectedListAccount, 
+                            "ATTENTION", 
+                            JOptionPane.YES_NO_OPTION); 
+                    
+                    if (selectedOption == JOptionPane.YES_OPTION) {
+                        String closedAccountInfo = bankLogic.closeAccount(selectedListAccount); // todo take back pnr?
+                        System.out.println("delete Account: " + closedAccountInfo);
+                        if(closedAccountInfo != null)
+                        {
+                            String selectedListCustomer = (String) customerList.getSelectedValue();
+                            String[] selectedCustomer = selectedListCustomer.split(" "); // simple for simple case
+                            accountList.setListData(bankLogic.getAccountIds(selectedCustomer[2]).toArray());
+                            JOptionPane.showMessageDialog(null, "Deleted Account: \n" + closedAccountInfo);
+                        }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(null, "Account does not exists", "Alert", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "You have to mark a customer & an account in the list!");
+                }
+            }
+            
+            if(e.getSource() == depositButton || e.getSource() == widthdrawButton)
+            {
+                int account_idx = accountList.getSelectedIndex();
+                int customer_idx = customerList.getSelectedIndex();
+
+                if(account_idx != -1 && customer_idx != -1)
+                {          
+                    int selectedListAccount = (int) accountList.getSelectedValue();
+                    String selectedListCustomer = (String) customerList.getSelectedValue();
+                    String[] selectedCustomer = selectedListCustomer.split(" "); // simple for simple case
+                    
+                    int action = DEPOSIT;
+                    if(e.getSource() == widthdrawButton)
+                    {
+                        action = WITHDRAW;
+                    }
+                    
+                    JDialog depositDialog = new TransactionDialog(action, thisWin, selectedCustomer[2], selectedListAccount);
+                    depositDialog.setVisible(true);
+                    
+                    String accountInfo = bankLogic.getAccount(selectedListAccount);
+                    if(accountInfo != null)
+                    {
+                        String[] accountSubInfo = accountInfo.split(" ");
+                        String accountType = accountSubInfo[2] + " " + accountSubInfo[3];
+                        
+                        accountBalanceTextField.setText(accountSubInfo[1]);
+                    }
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "You have to mark a customer & an account in the list!");
+                }
+            }
+                    
         }
     }
     
@@ -462,6 +531,16 @@ public class OverviewWindow extends JFrame
         {
             return false;
         }
+    }
+    
+    public boolean deposit(String personalIdentityNumber, int accountId, double amount)
+    {
+        return bankLogic.deposit(personalIdentityNumber, accountId, amount);
+    }
+    
+    public boolean withdraw(String personalIdentityNumber, int accountId, double amount)
+    {
+        return bankLogic.withdraw(personalIdentityNumber, accountId, amount);
     }
     
     public static void main(String[] args)

@@ -11,7 +11,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,10 +22,7 @@ public class AddAccountDialog extends JDialog implements ActionListener
     private static final int FRAME_HEIGHT = 250;
 
     private JLabel typeLabel = new JLabel("Account type: ");
-    private JLabel lastNameLabel = new JLabel("Last name: ");
     private JLabel personalIdentityLabel = new JLabel("Personal identity number: ");
-    private JTextField firstNameTextField = new JTextField(20);
-    private JTextField lastNameTextField = new JTextField(20);
     private JTextField personalIdentityTextField= new JTextField(20);
     JPanel inputPanel = new JPanel();
     JPanel buttonPanel = new JPanel();
@@ -50,7 +46,6 @@ public class AddAccountDialog extends JDialog implements ActionListener
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
-        //setTitle("New Customer");
         //???.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -86,8 +81,6 @@ public class AddAccountDialog extends JDialog implements ActionListener
         
         if(e.getSource() == createButton)
         {
-            //accountList.get
-            //String accountType = (String)cb.getSelectedItem();
             if(accountList.getSelectedIndex() == 0)
             {
                 if(!ow.createSavingsAccount(personalIdentityTextField.getText()))
@@ -118,19 +111,6 @@ public class AddAccountDialog extends JDialog implements ActionListener
             //https://stackoverflow.com/a/6970105
             this.dispose();     
         }
-        
-//        if(e.getSource() == accountList)
-//        {
-//            System.out.println("fr");
-//        }
     }
-    
-    /*public static void main(String[] args)
-    {
-        JFrame frame = new createCustomerWin();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }*/
-
 }
 
