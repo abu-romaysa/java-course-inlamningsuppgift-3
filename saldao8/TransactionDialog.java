@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -20,48 +19,45 @@ public class TransactionDialog extends JDialog implements ActionListener
     private static final int FRAME_WIDTH = 400;
     private static final int FRAME_HEIGHT = 200;
 
-    private JLabel amountLabel = new JLabel("Amount: ");
     private JTextField amountTextField = new JTextField(10);
-    private JLabel accountIdLabel = new JLabel("Account ID: ");
     private JTextField accountIdTextField = new JTextField(10);
-    JPanel inputPanel = new JPanel();
-    JPanel buttonPanel = new JPanel();
     JButton actionButton = new JButton("Deposit");
     JButton abortButton = new JButton("Abort");
     
-    private OverviewWindow ow;
-    int accountId;
-    String personalIdentityNumber;
-    int action;
+    private OverviewLogicWin overviewLogicWin;
+    private int accountId;
+    private String personalIdentityNumber;
+    private int action;
 
-    public TransactionDialog(int action, OverviewWindow ow, String personalIdentityNumber, int accountId)
+    public TransactionDialog(int action, OverviewLogicWin overviewLogicWin, String personalIdentityNumber, int accountId)
     {
-        super(ow, "Deposit", true);
+        super(overviewLogicWin, "Deposit", true);
         
-        this.ow = ow;
+        this.overviewLogicWin = overviewLogicWin;
         this.accountId = accountId;
         this.personalIdentityNumber = personalIdentityNumber; 
         this.action = action;
         
-        if(action == ow.WITHDRAW)
+        if(action == overviewLogicWin.WITHDRAW)
         {
             setTitle("Withdraw");
             actionButton.setText("Withdraw");
         }
         
         createWindowContent();
-        
         this.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
-        //???.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void createWindowContent()
     {
+        JPanel inputPanel = new JPanel();
         inputPanel.setBorder(BorderFactory.createEmptyBorder(30, 10, 30, 10));
       
+        JLabel amountLabel = new JLabel("Amount: ");
+        JLabel accountIdLabel = new JLabel("Account ID: ");
         inputPanel.setLayout(new GridLayout(2,  2));
         inputPanel.add(amountLabel);
         inputPanel.add(amountTextField);
@@ -71,7 +67,8 @@ public class TransactionDialog extends JDialog implements ActionListener
         accountIdTextField.setText(Integer.toString(accountId));
         this.add(inputPanel);
         
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 0));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         buttonPanel.add(actionButton);
         buttonPanel.add(abortButton);
         abortButton.addActionListener(this);
@@ -83,9 +80,9 @@ public class TransactionDialog extends JDialog implements ActionListener
         
         if(e.getSource() == actionButton)
         {
-            if(action == ow.DEPOSIT)
+            if(action == overviewLogicWin.DEPOSIT)
             {
-                if(ow.deposit(personalIdentityNumber, accountId, Double.parseDouble(amountTextField.getText())))
+                if(overviewLogicWin.deposit(personalIdentityNumber, accountId, Double.parseDouble(amountTextField.getText())))
                 {
                     this.dispose();
                 }
@@ -96,7 +93,7 @@ public class TransactionDialog extends JDialog implements ActionListener
             }
             else
             {
-                if(ow.withdraw(personalIdentityNumber, accountId, Double.parseDouble(amountTextField.getText())))
+                if(overviewLogicWin.withdraw(personalIdentityNumber, accountId, Double.parseDouble(amountTextField.getText())))
                 {
                     this.dispose();
                 }
@@ -104,10 +101,8 @@ public class TransactionDialog extends JDialog implements ActionListener
                 {
                     JOptionPane.showMessageDialog(null, "Transaction could not be performed!", "Alert", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-            
-            //JOptionPane.showMessageDialog(null, "Could not deposit amount! \n (Customer or account could not be found)", "Alert", JOptionPane.ERROR_MESSAGE);
-        }
+            }     
+       }
         
         if(e.getSource() == abortButton)
         {

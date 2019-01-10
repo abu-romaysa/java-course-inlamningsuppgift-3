@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,36 +20,31 @@ public class AddAccountDialog extends JDialog implements ActionListener
     private static final int FRAME_WIDTH = 400;
     private static final int FRAME_HEIGHT = 250;
 
-    private JLabel typeLabel = new JLabel("Account type: ");
-    private JLabel personalIdentityLabel = new JLabel("Personal identity number: ");
-    private JTextField personalIdentityTextField= new JTextField(20);
-    JPanel inputPanel = new JPanel();
-    JPanel buttonPanel = new JPanel();
-    JButton createButton = new JButton("Create");
-    JButton abortButton = new JButton("Abort");
-    JComboBox accountList;
+    private JTextField personalIdentityTextField = new JTextField(20);
+    private JButton createButton = new JButton("Create");
+    private JButton abortButton = new JButton("Abort");
+    private JComboBox accountList;
     
-    private OverviewWindow ow;
-    String personalIdentityNumber;
+    private OverviewLogicWin overviewLogicWin;
+    private String personalIdentityNumber;
 
-    public AddAccountDialog(OverviewWindow ow, String personalIdentityNumber)
+    public AddAccountDialog(OverviewLogicWin overviewLogicWin, String personalIdentityNumber)
     {
-        super(ow, "New Account", true);
+        super(overviewLogicWin, "New Account", true);
         
-        this.ow = ow;
+        this.overviewLogicWin = overviewLogicWin;
         this.personalIdentityNumber = personalIdentityNumber;
         
         createWindowContent();
-        
         this.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
-        //???.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void createWindowContent()
     {
+        JPanel inputPanel = new JPanel();
         inputPanel.setBorder(BorderFactory.createEmptyBorder(60, 20, 60, 20));
         
         String[] options = { "Savings account", "Credit Account"};
@@ -60,6 +54,9 @@ public class AddAccountDialog extends JDialog implements ActionListener
         accountList.setSelectedIndex(0);
         accountList.addActionListener(this);
       
+        JLabel typeLabel = new JLabel("Account type: ");
+        JLabel personalIdentityLabel = new JLabel("Personal identity number: ");
+
         inputPanel.setLayout(new GridLayout(2,  2));
         inputPanel.add(typeLabel);
         inputPanel.add(accountList);
@@ -69,7 +66,8 @@ public class AddAccountDialog extends JDialog implements ActionListener
         personalIdentityTextField.setText(personalIdentityNumber);
         this.add(inputPanel);
         
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, 0));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         buttonPanel.add(createButton);
         buttonPanel.add(abortButton);
         abortButton.addActionListener(this);
@@ -83,7 +81,7 @@ public class AddAccountDialog extends JDialog implements ActionListener
         {
             if(accountList.getSelectedIndex() == 0)
             {
-                if(!ow.createSavingsAccount(personalIdentityTextField.getText()))
+                if(!overviewLogicWin.createSavingsAccount(personalIdentityTextField.getText()))
                 {
                     JOptionPane.showMessageDialog(null, "Customer does not exist!", "Alert", JOptionPane.ERROR_MESSAGE);
                 }
@@ -95,7 +93,7 @@ public class AddAccountDialog extends JDialog implements ActionListener
             
             if(accountList.getSelectedIndex() == 1)
             {
-                if(!ow.createCreditAccount(personalIdentityTextField.getText()))
+                if(!overviewLogicWin.createCreditAccount(personalIdentityTextField.getText()))
                 {
                     JOptionPane.showMessageDialog(null, "Customer does not exist!", "Alert", JOptionPane.ERROR_MESSAGE);
                 }

@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class MainWindow extends JFrame
@@ -34,12 +35,14 @@ public class MainWindow extends JFrame
     private JButton withdrawButton = new JButton("Withdraw");
     private JButton transactionsButton = new JButton("Transactions");
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
-
-    private JLabel windowTitleLabel = new JLabel("QUICK ACCESS VIEW");
-
-    private JPanel mainPanel = new JPanel();
-    private JPanel quickOptionsPanel = new JPanel();
-    private JPanel titlePanel = new JPanel(); 
+    private JMenuItem exitMenuItem = new JMenuItem("Exit"); 
+    
+    public static void main(String[] args)
+    {
+        JFrame frame = new MainWindow();
+        frame.setVisible(true);
+        JOptionPane.showMessageDialog(null,"Note: this is a beta version!");
+    }
 
     public MainWindow()
     {
@@ -51,16 +54,14 @@ public class MainWindow extends JFrame
         buttonList.add(depositButton);
         buttonList.add(withdrawButton);
         buttonList.add(transactionsButton);
-        
-        setButtonSizes();
-        addButtonListeners();
-        
+ 
         createComponents();
         this.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
-        setTitle("Saldao-8 Banking System");
+        setTitle("Saldao-8 Banking System (Beta)");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     private void createComponents()
@@ -70,7 +71,9 @@ public class MainWindow extends JFrame
     }
     
     private void createMainWindowContent()
-    {        
+    {
+        JPanel titlePanel = new JPanel(); 
+        JLabel windowTitleLabel = new JLabel("QUICK ACCESS VIEW");
         windowTitleLabel.setFont(new Font("Serif", Font.BOLD, 20)); //https://stackoverflow.com/a/29148550
         titlePanel.add(windowTitleLabel);
         titlePanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
@@ -94,12 +97,23 @@ public class MainWindow extends JFrame
         overviewFourPanel.add(depositButton);
         overviewFourPanel.add(withdrawButton);
         overviewFourPanel.add(transactionsButton);
+        handleCustomerButton.setEnabled(false);
+        newCustomerButton.setEnabled(false);
+        newAccountButton.setEnabled(false);
+        closeAccountButton.setEnabled(false);
+        depositButton.setEnabled(false);
+        withdrawButton.setEnabled(false);
+        transactionsButton.setEnabled(false);
+        setButtonSizes();
+        addButtonListeners();
 
+        //https://docs.oracle.com/javase/tutorial/uiswing/components/border.html
         overviewOnePanel.setBorder(BorderFactory.createTitledBorder("Overview"));
         overviewTwoPanel.setBorder(BorderFactory.createTitledBorder("Customer"));
         overviewThreePanel.setBorder(BorderFactory.createTitledBorder("Account"));
         overviewFourPanel.setBorder(BorderFactory.createTitledBorder("Actions"));
-        
+
+        JPanel quickOptionsPanel = new JPanel();
         quickOptionsPanel.setLayout(new BoxLayout(quickOptionsPanel, BoxLayout.Y_AXIS));
         quickOptionsPanel.add(overviewOnePanel);
         quickOptionsPanel.add(overviewTwoPanel);
@@ -110,6 +124,7 @@ public class MainWindow extends JFrame
         //https://docs.oracle.com/javase/tutorial/uiswing/components/border.html
         quickOptionsPanel.setBorder(BorderFactory.createEmptyBorder(10, 50, 50, 50));
         
+        JPanel mainPanel = new JPanel();
         mainPanel.add(titlePanel);
         mainPanel.add(quickOptionsPanel);
                 
@@ -134,41 +149,28 @@ public class MainWindow extends JFrame
         }
     }
     
-    public class ButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            if(e.getSource() == overviewButton)
-                System.out.println("Du har klickat på knappen!");
-            else if(e.getSource() == handleCustomerButton)
-                System.out.println("ROMAYSA");
-            else if(e.getSource() == newCustomerButton)
-                System.out.println("ROMAYSA");
-            else if(e.getSource() == newAccountButton)
-                System.out.println("ROMAYSA");
-            else if(e.getSource() == closeAccountButton)
-                System.out.println("ROMAYSA");
-            else if(e.getSource() == depositButton)
-                System.out.println("ROMAYSA");
-            else if(e.getSource() == withdrawButton)
-                System.out.println("ROMAYSA");
-            else if(e.getSource() == transactionsButton);
-            System.out.println("ROMAYSA");
-        }
-    }
-    
     private void createMenu()
     {
         JMenuBar menuBar = new JMenuBar();
         
         JMenu fileMenu = new JMenu("FILE");        
         JMenuItem loadMenuItem = new JMenuItem("Load");
-        JMenuItem SaveMenuItem = new JMenuItem("Save");
+        JMenuItem saveMenuItem = new JMenuItem("Save");
+        exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.addActionListener(new MenuItemListener());
+        loadMenuItem.setEnabled(false);
+        saveMenuItem.setEnabled(false);
         fileMenu.add(loadMenuItem);
-        fileMenu.add(SaveMenuItem);
+        fileMenu.add(saveMenuItem);
+        fileMenu.add(exitMenuItem);
         
         JMenu customerMenu = new JMenu("CUSTOMER");
         JMenuItem createCustomerMenuItem = new JMenuItem("Create Customer");
         JMenuItem createAccountMenuItem = new JMenuItem("Change Customer Name");
         JMenuItem deleteAccountMenuItem = new JMenuItem("Delete Customer");
+        createCustomerMenuItem.setEnabled(false);
+        createAccountMenuItem.setEnabled(false);
+        deleteAccountMenuItem.setEnabled(false);
         customerMenu.add(createCustomerMenuItem);
         customerMenu.add(createAccountMenuItem);
         customerMenu.add(deleteAccountMenuItem);
@@ -177,23 +179,43 @@ public class MainWindow extends JFrame
         JMenuItem createSavingsAccountMenuItem = new JMenuItem("Create Savings Account");
         JMenuItem createCreditAccountMenuItem = new JMenuItem("Create Credit Account");
         JMenuItem closeAccountMenuItem = new JMenuItem("Close Account");
+        createSavingsAccountMenuItem.setEnabled(false);
+        createCreditAccountMenuItem.setEnabled(false);
+        closeAccountMenuItem.setEnabled(false);
         accountMenu.add(createSavingsAccountMenuItem);
         accountMenu.add(createCreditAccountMenuItem);
         accountMenu.add(closeAccountMenuItem);        
 
         JMenu HelpMenu = new JMenu("HELP");
-        
+        JMenuItem aboutUsMenuItem = new JMenuItem("About Us");
+        aboutUsMenuItem.setEnabled(false);
+        HelpMenu.add(aboutUsMenuItem);
+
         menuBar.add(fileMenu);
         menuBar.add(customerMenu);
         menuBar.add(accountMenu);
         menuBar.add(HelpMenu);
         this.add(menuBar, BorderLayout.NORTH);
     }
-
-    public static void main(String[] args)
-    {
-        JFrame frame = new MainWindow();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+    
+    public class ButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == overviewButton)
+            {
+                JFrame frame = new OverviewLogicWin();
+                frame.setVisible(true);
+            }
+        }
     }
+    
+    public class MenuItemListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == exitMenuItem)
+            {
+                // https://stackoverflow.com/a/19764841
+                System.exit(0);
+            }
+        }
+    }
+
 }
