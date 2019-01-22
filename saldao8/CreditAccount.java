@@ -89,6 +89,10 @@ public class CreditAccount extends Account
         return ACCOUNT_TYPE;
     }
     
+    /**
+     * Provides the credit limit for the account
+     * @return the credit limit
+     */
     public double getCreditLimit()
     {
         return creditLimit;

@@ -86,19 +86,6 @@ public class BankLogic implements AccountTypes
 
         return null;
     }
-    
-    public ArrayList<Integer> getAccountIds(String personalIdentityNumber)
-    {
-        ArrayList<Integer> accountIds = new ArrayList<Integer>();
-
-        Customer customer = findCustomer(personalIdentityNumber);
-        if(customer != null)
-        {
-            accountIds = customer.getAccountIds();
-        }
-        
-        return accountIds;
-    }
 
     /**
      * Changes a customer's first and last name
@@ -112,7 +99,7 @@ public class BankLogic implements AccountTypes
     {
         Customer customer = findCustomer(personalIdentityNumber);
         if(customer != null)
-        {            
+        {
             customer.changeFirstName(firstName);
             customer.changeLastName(lastName);
 
@@ -170,20 +157,6 @@ public class BankLogic implements AccountTypes
 
         return null;
     }
-    
-//    public String closeAccount(int accountId)
-//    {
-//        for(Customer customer : customers)
-//        {
-//            String accountInfo = customer.getAccount(accountId);
-//            if(accountInfo != null)
-//            {
-//                return customer.removeAccount(accountId);
-//            }
-//        }
-//
-//        return null;
-//    }
 
     /**
      * Creates a saving account for a customer
@@ -229,29 +202,34 @@ public class BankLogic implements AccountTypes
      * @return string containing information about the customer's account,
      *         otherwise null if it could not be found
      */
-//    public String getAccount(String personalIdentityNumber, int accountId)
-//    {
-//        Customer customer = findCustomer(personalIdentityNumber);
-//        if(customer != null)
-//        {
-//            return customer.getAccount(accountId);
-//        }
-//
-//        return null;
-//    }
-    
-    public String getAccount(int accountId)
+    public String getAccount(String personalIdentityNumber, int accountId)
     {
-        for(Customer customer : customers)
+        Customer customer = findCustomer(personalIdentityNumber);
+        if(customer != null)
         {
-            String accountInfo = customer.getAccount(accountId);
-            if(accountInfo != null)
-            {
-                return accountInfo;
-            }
+            return customer.getAccount(accountId);
         }
 
         return null;
+    }
+    
+    /**
+     * Provides the customer's account IDs
+     * 
+     * @param personalIdentityNumber - belonging to the customer of interest
+     * @return list with account IDs belonging to the customer
+     */
+    public ArrayList<Integer> getAccountIds(String personalIdentityNumber)
+    {
+        ArrayList<Integer> accountIds = new ArrayList<Integer>();
+
+        Customer customer = findCustomer(personalIdentityNumber);
+        if(customer != null)
+        {
+            accountIds = customer.getAccountIds();
+        }
+        
+        return accountIds;
     }
 
     /**
@@ -323,7 +301,7 @@ public class BankLogic implements AccountTypes
     {
         for(Customer customer : customers)
         {
-            // todo from == to equals https://www.journaldev.com/18009/java-string-compare#java-string-comparison-using-operator
+            //https://www.journaldev.com/18009/java-string-compare#java-string-comparison-using-operator
             if(customer.getPersonalIdentityNumber().equals(personalIdentityNumber))
             {
                 return customer;

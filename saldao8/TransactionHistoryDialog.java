@@ -1,5 +1,11 @@
 package saldao8;
 
+/**
+ * This class implements the Dialog GUI for presenting transactions
+ * 
+ * @author Salim Daoud, saldao-8
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -28,8 +34,16 @@ public class TransactionHistoryDialog extends JDialog implements ActionListener
     private int accountId;
     private String personalIdentityNumber;
 
+    /**
+     * Constructor
+     * 
+     * @param overviewLogicWin - parent and owner frame
+     * @param personalIdentityNumber - new customer's personal identity number
+     * @param accountId - the account ID in question
+     */
     public TransactionHistoryDialog(OverviewLogicWin overviewLogicWin, String personalIdentityNumber, int accountId)
     {
+        // calls the parents constructor i.e. JDialog
         super(overviewLogicWin, "Transaction History", true);
         
         this.overviewLogicWin = overviewLogicWin;
@@ -43,8 +57,12 @@ public class TransactionHistoryDialog extends JDialog implements ActionListener
         setResizable(false);
     }
 
+    /**
+     * Builds the window's GUI
+     */
     private void createWindowContent()
     {
+        // build account info section
         JLabel accountIdLabel = new JLabel("Account ID: ");
         JTextField accountIdTextField = new JTextField(10);
         accountPanel.setLayout(new GridLayout(1,  2));
@@ -55,15 +73,18 @@ public class TransactionHistoryDialog extends JDialog implements ActionListener
         accountPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         this.add(accountPanel, BorderLayout.NORTH);
         
+        // build scrollable text area section
         JTextArea transactionTextArea = new JTextArea(5, 20);
         String transactions = overviewLogicWin.getTransactions(personalIdentityNumber, accountId);
         transactionTextArea.setText(transactions);
         transactionTextArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         transactionTextArea.setEditable(false);
+        // add a vertical scrollbar to the text area 
         JScrollPane scrollPane = new JScrollPane(transactionTextArea);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         this.add(scrollPane);
         
+        // build button's section
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         JButton closeButton = new JButton("Close");
         buttonPanel.add(closeButton);
@@ -71,13 +92,15 @@ public class TransactionHistoryDialog extends JDialog implements ActionListener
         this.add(buttonPanel, BorderLayout.SOUTH);
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent e) {
         
         String buttonText = e.getActionCommand();
         
         if(buttonText.equals("Close"))
         {
-            //https://stackoverflow.com/a/6970105
             this.dispose();     
         }
     }

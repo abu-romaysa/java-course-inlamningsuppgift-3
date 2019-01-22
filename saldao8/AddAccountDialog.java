@@ -1,5 +1,11 @@
 package saldao8;
 
+/**
+ * This class implements the Dialog GUI for creating an account
+ * 
+ * @author Salim Daoud, saldao-8
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -26,8 +32,15 @@ public class AddAccountDialog extends JDialog implements ActionListener
     private OverviewLogicWin overviewLogicWin;
     private String personalIdentityNumber;
 
+    /**
+     * Constructor
+     * 
+     * @param overviewLogicWin - parent and owner frame
+     * @param personalIdentityNumber - new customer's personal identity number
+     */
     public AddAccountDialog(OverviewLogicWin overviewLogicWin, String personalIdentityNumber)
     {
+        // calls the parents constructor i.e. JDialog
         super(overviewLogicWin, "New Account", true);
         
         this.overviewLogicWin = overviewLogicWin;
@@ -40,14 +53,18 @@ public class AddAccountDialog extends JDialog implements ActionListener
         setResizable(false);
     }
 
+    /**
+     * Builds the window's GUI
+     */
     private void createWindowContent()
     {
+        // build input section
         JPanel inputPanel = new JPanel();
         inputPanel.setBorder(BorderFactory.createEmptyBorder(60, 20, 60, 20));
         
-        String[] options = { "Savings account", "Credit Account"};
+        String[] options = {"Savings account", "Credit Account"};
         accountList = new JComboBox(options);
-        //Create the combo box, select item at index 1.
+        // create the combo box, select item at index 1 as default
         accountList.setSelectedIndex(0);
         accountList.addActionListener(this);
       
@@ -63,6 +80,7 @@ public class AddAccountDialog extends JDialog implements ActionListener
         personalIdentityTextField.setText(personalIdentityNumber);
         this.add(inputPanel);
         
+        // build button's section
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         JButton createButton = new JButton("Create");
@@ -74,6 +92,9 @@ public class AddAccountDialog extends JDialog implements ActionListener
         this.add(buttonPanel, BorderLayout.SOUTH);
     }
     
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent e) {
         
         String buttonText = e.getActionCommand();
@@ -107,6 +128,7 @@ public class AddAccountDialog extends JDialog implements ActionListener
         
         if(buttonText.equals("Abort"))
         {
+            // close the dialog
             //https://stackoverflow.com/a/6970105
             this.dispose();     
         }

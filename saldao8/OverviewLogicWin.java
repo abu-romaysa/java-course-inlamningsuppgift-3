@@ -54,7 +54,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
     private JTextField accountInterestTextField = new JTextField(10);
     private JTextField accountBalanceTextField = new JTextField(10);
     private JTextField accountCreditTextField = new JTextField(10);
-    private JLabel creditLabel = new JLabel("Credit");
+    private JLabel creditLabel = new JLabel("Credit Limit");
     
     private BankLogic bankLogic;
     private OverviewLogicWin overviewLogicWin;
@@ -357,39 +357,48 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
      */
     public class AccountsListSelectionHandler implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent e) { 
-            int idx = accountList.getSelectedIndex();
+            
+            int idx = accountList.getSelectedIndex();            
             if(idx != -1)
             {
-                int selectedListAccount = (int) accountList.getSelectedValue();
-                
-                String accountInfo = bankLogic.getAccount(selectedListAccount);
-                
-                if(accountInfo != null)
+                // the prerequisite is that a customer has to be selected
+                if(customerList.getSelectedIndex() != -1)
                 {
-                    // update and visualize the customer's account details
-                    String[] accountSubInfo = accountInfo.split(" ");
-                    String accountType = accountSubInfo[2] + " " + accountSubInfo[3];
+                    String personalIdentityNumber = getSelectedCustomerIdentityNr();
+                    int selectedListAccount = (int) accountList.getSelectedValue();
+                    String accountInfo = bankLogic.getAccount(personalIdentityNumber, selectedListAccount);
                     
-                    accountBalanceTextField.setText(accountSubInfo[1]);
-                    accountTypeTextField.setText(accountType);
-                    accountInterestTextField.setText(accountSubInfo[4]);
-                    
-                    // if it is a credit account, then visualize and update corresponding components
-                    if(accountType.equals("Credit account"))
+                    if(accountInfo != null)
                     {
-                        accountCreditTextField.setText(accountSubInfo[5]);
-                        accountCreditTextField.setVisible(true);
-                        creditLabel.setVisible(true);
+                        // update and visualize the customer's account details
+                        String[] accountSubInfo = accountInfo.split(" ");
+                        String accountType = accountSubInfo[2] + " " + accountSubInfo[3];
+                        
+                        accountBalanceTextField.setText(accountSubInfo[1]);
+                        accountTypeTextField.setText(accountType);
+                        accountInterestTextField.setText(accountSubInfo[4]);
+                        
+                        // if it is a credit account, then visualize and update corresponding components
+                        if(accountType.equals("Credit account"))
+                        {
+                            accountCreditTextField.setText(accountSubInfo[5]);
+                            accountCreditTextField.setVisible(true);
+                            creditLabel.setVisible(true);
+                        }
+                        else
+                        {
+                            accountCreditTextField.setVisible(false);
+                            creditLabel.setVisible(false);
+                        }
                     }
                     else
                     {
-                        accountCreditTextField.setVisible(false);
-                        creditLabel.setVisible(false);
+                        JOptionPane.showMessageDialog(null, "Customer does not exists", "Alert", JOptionPane.ERROR_MESSAGE);
                     }
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(null, "Customer does not exists", "Alert", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "You have to mark a customer in the list!");
                 }
             }
             else
@@ -447,10 +456,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
                 int idx = customerList.getSelectedIndex();
                 if(idx != -1)
                 {
-                    // fetch personal identity number for chosen customer 
-                    String selectedListCustomer = (String) customerList.getSelectedValue();
-                    String[] selectedCustomer = selectedListCustomer.split(" ");
-                    String personalIdentityNumber = selectedCustomer[2];
+                    String personalIdentityNumber = getSelectedCustomerIdentityNr();
                     
                     // make sure that the user really wants to delete the customer by using a confirmation dialog
                     int selectedOption = JOptionPane.showConfirmDialog(
@@ -496,10 +502,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
                 int idx = customerList.getSelectedIndex();
                 if(idx != -1)
                 {
-                    // fetch personal identity number for chosen customer 
-                    String selectedListCustomer = (String) customerList.getSelectedValue();
-                    String[] selectedCustomer = selectedListCustomer.split(" ");
-                    String personalIdentityNumber = selectedCustomer[2];
+                    String personalIdentityNumber = getSelectedCustomerIdentityNr();
 
                     // create and open own tailored dialog window for adding accounts
                     JDialog addAccountDialog = new AddAccountDialog(overviewLogicWin, personalIdentityNumber);
@@ -530,10 +533,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
                     
                     // if user confirms the wish to delete
                     if (selectedOption == JOptionPane.YES_OPTION) {
-                        // fetch personal identity number for chosen customer 
-                        String selectedListCustomer = (String) customerList.getSelectedValue();
-                        String[] selectedCustomer = selectedListCustomer.split(" ");
-                        String personalIdentityNumber = selectedCustomer[2];
+                        String personalIdentityNumber = getSelectedCustomerIdentityNr();
 
                         String closedAccountInfo = bankLogic.closeAccount(personalIdentityNumber, selectedListAccount);                       
                         if(closedAccountInfo != null)
@@ -563,11 +563,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
                 if(account_idx != -1 && customer_idx != -1)
                 {          
                     int selectedListAccount = (int) accountList.getSelectedValue();
-                    
-                    // fetch personal identity number for chosen customer 
-                    String selectedListCustomer = (String) customerList.getSelectedValue();
-                    String[] selectedCustomer = selectedListCustomer.split(" ");
-                    String personalIdentityNumber = selectedCustomer[2];
+                    String personalIdentityNumber = getSelectedCustomerIdentityNr();
                     
                     // check action to be executed
                     int action = DEPOSIT;
@@ -581,11 +577,10 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
                     depositDialog.setVisible(true);
                     
                     // update and visualize the customer's new balance  
-                    String accountInfo = bankLogic.getAccount(selectedListAccount);
+                    String accountInfo = bankLogic.getAccount(personalIdentityNumber, selectedListAccount);
                     if(accountInfo != null)
                     {
-                        String[] accountSubInfo = accountInfo.split(" ");
-                        String accountType = accountSubInfo[2] + " " + accountSubInfo[3];
+                        String[] accountSubInfo = accountInfo.split(" ");                        
                         accountBalanceTextField.setText(accountSubInfo[1]);
                     }
                 }
@@ -604,11 +599,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
                 if(account_idx != -1 && customer_idx != -1)
                 {          
                     int selectedListAccount = (int) accountList.getSelectedValue();
-                    
-                    // fetch personal identity number for chosen customer 
-                    String selectedListCustomer = (String) customerList.getSelectedValue();
-                    String[] selectedCustomer = selectedListCustomer.split(" ");
-                    String personalIdentityNumber = selectedCustomer[2];
+                    String personalIdentityNumber = getSelectedCustomerIdentityNr();
 
                     // create and open own tailored dialog window for showing the transaction history
                     JDialog depositDialog = new TransactionHistoryDialog(overviewLogicWin, personalIdentityNumber, selectedListAccount);
@@ -653,6 +644,19 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
         accountInterestTextField.setText("");
         accountBalanceTextField.setText("");
         accountCreditTextField.setText("");
+    }
+    
+    
+    /**
+     * Fetches the selected customer's personal identity number
+     * 
+     * @return string containing the customer's personal identity number
+     */
+    private String getSelectedCustomerIdentityNr()
+    { 
+        String selectedListCustomer = (String) customerList.getSelectedValue();
+        String[] selectedCustomer = selectedListCustomer.split(" ");
+        return selectedCustomer[2];
     }
     
     /**

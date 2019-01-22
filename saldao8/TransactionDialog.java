@@ -1,5 +1,11 @@
 package saldao8;
 
+/**
+ * This class implements the Dialog GUI for doing transactions
+ * 
+ * @author Salim Daoud, saldao-8
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -29,8 +35,17 @@ public class TransactionDialog extends JDialog implements ActionListener
     private String personalIdentityNumber;
     private int action;
 
+    /**
+     * Constructor
+     * 
+     * @param action - action to perform (deposit/withdraw)
+     * @param overviewLogicWin - parent and owner frame
+     * @param personalIdentityNumber - new customer's personal identity number
+     * @param accountId - the account ID in question
+     */
     public TransactionDialog(int action, OverviewLogicWin overviewLogicWin, String personalIdentityNumber, int accountId)
     {
+        // calls the parents constructor i.e. JDialog
         super(overviewLogicWin, "Deposit", true);
         
         this.overviewLogicWin = overviewLogicWin;
@@ -38,6 +53,7 @@ public class TransactionDialog extends JDialog implements ActionListener
         this.personalIdentityNumber = personalIdentityNumber; 
         this.action = action;
         
+        // set title accordingly to action
         if(action == overviewLogicWin.WITHDRAW)
         {
             setTitle("Withdraw");
@@ -51,8 +67,12 @@ public class TransactionDialog extends JDialog implements ActionListener
         setResizable(false);
     }
 
+    /**
+     * Builds the window's GUI
+     */
     private void createWindowContent()
     {
+        // build input section
         JPanel inputPanel = new JPanel();
         inputPanel.setBorder(BorderFactory.createEmptyBorder(30, 10, 30, 10));
       
@@ -67,6 +87,7 @@ public class TransactionDialog extends JDialog implements ActionListener
         accountIdTextField.setText(Integer.toString(accountId));
         this.add(inputPanel);
         
+        // build button's section
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         buttonPanel.add(actionButton);
@@ -76,6 +97,10 @@ public class TransactionDialog extends JDialog implements ActionListener
         this.add(buttonPanel, BorderLayout.SOUTH);
     }
     
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent e) {
 
         if(e.getSource() == actionButton)
@@ -106,7 +131,6 @@ public class TransactionDialog extends JDialog implements ActionListener
         
         if(e.getSource() == abortButton)
         {
-            //https://stackoverflow.com/a/6970105
             this.dispose();     
         }
     }
