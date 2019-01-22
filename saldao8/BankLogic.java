@@ -89,13 +89,15 @@ public class BankLogic implements AccountTypes
     
     public ArrayList<Integer> getAccountIds(String personalIdentityNumber)
     {
+        ArrayList<Integer> accountIds = new ArrayList<Integer>();
+
         Customer customer = findCustomer(personalIdentityNumber);
         if(customer != null)
         {
-            return customer.getAccountIds();
+            accountIds = customer.getAccountIds();
         }
         
-        return null;
+        return accountIds;
     }
 
     /**
@@ -110,14 +112,13 @@ public class BankLogic implements AccountTypes
     {
         Customer customer = findCustomer(personalIdentityNumber);
         if(customer != null)
-        {
-            System.out.println("found");
+        {            
             customer.changeFirstName(firstName);
             customer.changeLastName(lastName);
 
             return true;
         }
-        System.out.println("not found");
+
         return false;
     }
 
@@ -158,32 +159,31 @@ public class BankLogic implements AccountTypes
      * @return string containing information about the customer's closed
      *         account, otherwise null if it could not be closed
      */
-//    public String closeAccount(String personalIdentityNumber, int accountId)
-//    {
-//        Customer customer = findCustomer(personalIdentityNumber);
-//        if(customer != null)
-//        {
-//            String closedAccountInfo = customer.removeAccount(accountId);
-//            System.out.println(closedAccountInfo);
-//            return closedAccountInfo;
-//        }
-//
-//        return null;
-//    }
-    
-    public String closeAccount(int accountId)
+    public String closeAccount(String personalIdentityNumber, int accountId)
     {
-        for(Customer customer : customers)
+        Customer customer = findCustomer(personalIdentityNumber);
+        if(customer != null)
         {
-            String accountInfo = customer.getAccount(accountId);
-            if(accountInfo != null)
-            {
-                return customer.removeAccount(accountId);
-            }
+            String closedAccountInfo = customer.removeAccount(accountId);            
+            return closedAccountInfo;
         }
 
         return null;
     }
+    
+//    public String closeAccount(int accountId)
+//    {
+//        for(Customer customer : customers)
+//        {
+//            String accountInfo = customer.getAccount(accountId);
+//            if(accountInfo != null)
+//            {
+//                return customer.removeAccount(accountId);
+//            }
+//        }
+//
+//        return null;
+//    }
 
     /**
      * Creates a saving account for a customer

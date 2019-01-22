@@ -23,7 +23,6 @@ public class TransactionHistoryDialog extends JDialog implements ActionListener
 
     private JPanel accountPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
-    private JButton closeButton = new JButton("Close");
     
     private OverviewLogicWin overviewLogicWin;
     private int accountId;
@@ -66,13 +65,17 @@ public class TransactionHistoryDialog extends JDialog implements ActionListener
         this.add(scrollPane);
         
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+        JButton closeButton = new JButton("Close");
         buttonPanel.add(closeButton);
         closeButton.addActionListener(this);
         this.add(buttonPanel, BorderLayout.SOUTH);
     }
     
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == closeButton)
+        
+        String buttonText = e.getActionCommand();
+        
+        if(buttonText.equals("Close"))
         {
             //https://stackoverflow.com/a/6970105
             this.dispose();     

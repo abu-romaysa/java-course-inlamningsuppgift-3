@@ -77,7 +77,7 @@ public class TransactionDialog extends JDialog implements ActionListener
     }
     
     public void actionPerformed(ActionEvent e) {
-        
+
         if(e.getSource() == actionButton)
         {
             if(action == overviewLogicWin.DEPOSIT)

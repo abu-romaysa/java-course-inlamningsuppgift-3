@@ -21,8 +21,6 @@ public class AddAccountDialog extends JDialog implements ActionListener
     private static final int FRAME_HEIGHT = 250;
 
     private JTextField personalIdentityTextField = new JTextField(20);
-    private JButton createButton = new JButton("Create");
-    private JButton abortButton = new JButton("Abort");
     private JComboBox accountList;
     
     private OverviewLogicWin overviewLogicWin;
@@ -50,7 +48,6 @@ public class AddAccountDialog extends JDialog implements ActionListener
         String[] options = { "Savings account", "Credit Account"};
         accountList = new JComboBox(options);
         //Create the combo box, select item at index 1.
-        //Indices start at 0, so 4 specifies the pig.
         accountList.setSelectedIndex(0);
         accountList.addActionListener(this);
       
@@ -68,6 +65,8 @@ public class AddAccountDialog extends JDialog implements ActionListener
         
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+        JButton createButton = new JButton("Create");
+        JButton abortButton = new JButton("Abort");
         buttonPanel.add(createButton);
         buttonPanel.add(abortButton);
         abortButton.addActionListener(this);
@@ -77,7 +76,9 @@ public class AddAccountDialog extends JDialog implements ActionListener
     
     public void actionPerformed(ActionEvent e) {
         
-        if(e.getSource() == createButton)
+        String buttonText = e.getActionCommand();
+
+        if(buttonText.equals("Create"))
         {
             if(accountList.getSelectedIndex() == 0)
             {
@@ -104,7 +105,7 @@ public class AddAccountDialog extends JDialog implements ActionListener
             }
         }
         
-        if(e.getSource() == abortButton)
+        if(buttonText.equals("Abort"))
         {
             //https://stackoverflow.com/a/6970105
             this.dispose();     

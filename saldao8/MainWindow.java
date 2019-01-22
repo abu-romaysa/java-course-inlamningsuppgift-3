@@ -1,5 +1,12 @@
 package saldao8;
 
+/**
+ * This class implements the main GUI that gives quick access to different 
+ * common actions.
+ * 
+ * @author Salim Daoud, saldao-8
+ */
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -37,6 +44,11 @@ public class MainWindow extends JFrame
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
     private JMenuItem exitMenuItem = new JMenuItem("Exit"); 
     
+    /**
+     * The application's entry point
+     *
+     * @param args - an array of command-line arguments for the application (not used)
+     */
     public static void main(String[] args)
     {
         JFrame frame = new MainWindow();
@@ -44,6 +56,9 @@ public class MainWindow extends JFrame
         JOptionPane.showMessageDialog(null,"Note: this is a beta version!");
     }
 
+    /**
+     * Constructor
+     */
     public MainWindow()
     {
         buttonList.add(overviewButton);
@@ -64,17 +79,24 @@ public class MainWindow extends JFrame
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
+    /**
+     * Builds the GUI
+     */
     private void createComponents()
     {
         createMenu();
         createMainWindowContent();     
     }
     
+    /**
+     * Builds the main content of the GUI
+     */
     private void createMainWindowContent()
     {
         JPanel titlePanel = new JPanel(); 
         JLabel windowTitleLabel = new JLabel("QUICK ACCESS VIEW");
-        windowTitleLabel.setFont(new Font("Serif", Font.BOLD, 20)); //https://stackoverflow.com/a/29148550
+        //https://stackoverflow.com/a/29148550
+        windowTitleLabel.setFont(new Font("Serif", Font.BOLD, 20)); 
         titlePanel.add(windowTitleLabel);
         titlePanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
         
@@ -83,7 +105,6 @@ public class MainWindow extends JFrame
         JPanel overviewThreePanel = new JPanel();
         JPanel overviewFourPanel = new JPanel();
         
-        // om jag lägger i array så tar add lika många rader sedan
         overviewOnePanel.setLayout(new FlowLayout());
         overviewTwoPanel.setLayout(new FlowLayout());
         overviewThreePanel.setLayout(new FlowLayout());
@@ -97,6 +118,8 @@ public class MainWindow extends JFrame
         overviewFourPanel.add(depositButton);
         overviewFourPanel.add(withdrawButton);
         overviewFourPanel.add(transactionsButton);
+
+        // this is a beta version, therefore some options are inactive for the moment
         handleCustomerButton.setEnabled(false);
         newCustomerButton.setEnabled(false);
         newAccountButton.setEnabled(false);
@@ -119,9 +142,9 @@ public class MainWindow extends JFrame
         quickOptionsPanel.add(overviewTwoPanel);
         quickOptionsPanel.add(overviewThreePanel);
         quickOptionsPanel.add(overviewFourPanel);
-        
-        //https://www.daniweb.com/posts/jump/1820204 // https://www.daniweb.com/programming/software-development/threads/425665/add-space-between-components-and-jframe
+         
         //https://docs.oracle.com/javase/tutorial/uiswing/components/border.html
+        //https://www.daniweb.com/programming/software-development/threads/425665/add-space-between-components-and-jframe
         quickOptionsPanel.setBorder(BorderFactory.createEmptyBorder(10, 50, 50, 50));
         
         JPanel mainPanel = new JPanel();
@@ -132,6 +155,9 @@ public class MainWindow extends JFrame
         this.add(mainPanel);
     }
     
+    /**
+     * Sets all buttons to the same size
+     */
     private void setButtonSizes()
     {
         for(JButton jButton : buttonList)
@@ -140,6 +166,9 @@ public class MainWindow extends JFrame
         }
     }
     
+    /**
+     * Adds listeners to all buttons
+     */
     private void addButtonListeners()
     {
         ActionListener buttonListener = new ButtonListener();
@@ -149,6 +178,9 @@ public class MainWindow extends JFrame
         }
     }
     
+    /**
+     * Builds the GUI's menu
+     */
     private void createMenu()
     {
         JMenuBar menuBar = new JMenuBar();
@@ -198,6 +230,9 @@ public class MainWindow extends JFrame
         this.add(menuBar, BorderLayout.NORTH);
     }
     
+    /**
+     * Inner class that implements the listeners used for buttons
+     */
     public class ButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == overviewButton)
@@ -208,11 +243,14 @@ public class MainWindow extends JFrame
         }
     }
     
+    /**
+     * Inner class that implements the listeners used for the menu items
+     */
     public class MenuItemListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == exitMenuItem)
             {
-                // https://stackoverflow.com/a/19764841
+                //https://stackoverflow.com/a/19764841
                 System.exit(0);
             }
         }
