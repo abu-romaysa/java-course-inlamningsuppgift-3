@@ -82,8 +82,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
      */
     private void buildWindow()
     {
-        createMenu();
-        //inspiration from: https://www.google.se/search?q=java+gui+for+simple+bank+system&rlz=1C1GCEU_svSE820SE821&source=lnms&tbm=isch&sa=X&ved=0ahUKEwj0pcTDqJbfAhWFCCwKHU3UC_kQ_AUIDigB&biw=1187&bih=618#imgrc=pcaBZZeDE5ShtM:
+        createMenu();       
         createWindowContent();
         
         this.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
@@ -170,13 +169,17 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
         JPanel customerDetailsPanel = new JPanel();
         
         JPanel customerDetailsTextPanel = new JPanel();
-        customerDetailsTextPanel.setLayout(new GridLayout(3, 2, 2, 2));
+        customerDetailsTextPanel.setLayout(new GridLayout(4, 2, 2, 2));
         JLabel firstNameLabel = new JLabel("First Name");
         JLabel lastNameLabel = new JLabel("Last Name");
+        JLabel pnrLabel = new JLabel("Personal Identity Number");
         customerDetailsTextPanel.add(firstNameLabel);
         customerDetailsTextPanel.add(lastNameLabel);
         customerDetailsTextPanel.add(customerFirstNameTextField);
         customerDetailsTextPanel.add(customerLastNameTextField);
+        customerDetailsTextPanel.add(pnrLabel);
+        JLabel empty = new JLabel();
+        customerDetailsTextPanel.add(empty);
         customerDetailsTextPanel.add(customerPNRTextField);
                 
         JPanel customerDetailsButtonsPanel = new JPanel();
@@ -196,7 +199,7 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
         addButton.addActionListener(buttonListener);
         deleteButton.addActionListener(buttonListener);
         clearButton.addActionListener(buttonListener);
-        customerDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
+        customerDetailsButtonsPanel.setBorder(BorderFactory.createEmptyBorder(110, 0, 0, 0));
         
         customerDetailsPanel.setLayout(new BorderLayout());
         customerDetailsPanel.add(customerDetailsTextPanel);
@@ -418,17 +421,24 @@ public class OverviewLogicWin extends JFrame implements AccountTypes
 
             if(buttonText.equals("Add"))
             {
-                if(bankLogic.createCustomer(customerFirstNameTextField.getText(), 
-                                            customerLastNameTextField.getText(), 
-                                            customerPNRTextField.getText()))
+                if(!customerPNRTextField.getText().equals(""))
                 {
-                    // update the customer list and clear the text fields to facilitate further additions of customers
-                    customerList.setListData(bankLogic.getAllCustomers().toArray());
-                    clearTextFields();
+                    if(bankLogic.createCustomer(customerFirstNameTextField.getText(), 
+                            customerLastNameTextField.getText(), 
+                            customerPNRTextField.getText()))
+                    {
+                        // update the customer list and clear the text fields to facilitate further additions of customers
+                        customerList.setListData(bankLogic.getAllCustomers().toArray());
+                        clearTextFields();
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null, "Customer already exists", "Alert", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(null, "Customer already exists", "Alert", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please type customer's personal identity number", "Alert", JOptionPane.ERROR_MESSAGE);
                 }
             }
 

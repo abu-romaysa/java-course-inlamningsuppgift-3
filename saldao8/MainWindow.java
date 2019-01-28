@@ -44,6 +44,8 @@ public class MainWindow extends JFrame
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
     private JMenuItem exitMenuItem = new JMenuItem("Exit"); 
     
+    private MainWindow mainWindow;
+    
     /**
      * The application's entry point
      *
@@ -69,6 +71,8 @@ public class MainWindow extends JFrame
         buttonList.add(depositButton);
         buttonList.add(withdrawButton);
         buttonList.add(transactionsButton);
+        
+        mainWindow = this;
  
         createComponents();
         this.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
@@ -239,6 +243,7 @@ public class MainWindow extends JFrame
             {
                 JFrame frame = new OverviewLogicWin();
                 frame.setVisible(true);
+                mainWindow.setVisible(false);
             }
         }
     }
